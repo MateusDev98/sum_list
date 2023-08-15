@@ -1,0 +1,123 @@
+# Definição da função sum de forma privada, uma função privada só pode ser acessada dentro do módulo
+# Utiliza-se o defp para definir uma função privada
+
+Exemplo: 
+  defp sum([], acc), do: acc
+
+  defp sum([head | tail], acc) do
+    acc = acc + head
+    sum(tail, acc)
+  end
+
+# Definição de função de forma simplificada
+
+  Exemplo:
+    # Frequentemente usada para funções pequenas que podem ser expressas em uma única linha
+
+    defp sum([], acc), do: acc
+
+    /* 
+
+      `do:` introduz o corpo da função, permitindo que você defina o que a função faz diretamente na mesma linha, sem necessidade de do ... end para delimitar o corpo da função.
+
+      Essa sintaxe é especialmente útil para funções curtas e claras, tornando o código mais limpo e legível. No entanto, para funções mais longas ou complexas, a forma padrão do ... end é geralmente preferida.
+
+    */
+
+
+# Notas gerais
+
+# Estava sendo usada para debug dentro da função sum
+  IO.inspect(head, label: "Head")
+  IO.inspect(acc, label: "Antes da soma do head com acc")
+  IO.inspect(tail, label: "Tail")
+  IO.inspect(acc, label: "Depois da soma do head com acc")
+
+# Exemplo de como funciona a exucução da função sum de forma detalhada
+  [1, 2, 3], 0
+  1 ex: [1, 2, 3] head: 1, tail: [2, 3], acc: 0 -> acc = acc + 1 -> sum([2, 3], 1)
+  2 ex: [2, 3] head: 2, tail: [3], acc: 1 -> acc = acc + 2 -> sum([3], 3)
+  3 ex: [3] head: 3, tail: [], acc: 3 -> acc = acc + 3 -> sum([], 6)
+  4 ex: [] head: nil, tail: nil, acc: 6 -> acc = 6 -> sum([], 6)
+
+# Pattern matching avançado, no entanto, esse tipo de pattern matching é raro e pode ser confuso.
+  def sum([head | tail] = list = [a, b, c, d], acc) do
+    d * 20
+  end
+
+# Funções com retorno boolean
+  Enum.any? - Toda função que contem uma interrogação no final retorna um valor boolean
+
+  Em Elixir, a convenção para funções que retornam um valor booleano é adicionar um sufixo ? ao nome da função. Esse padrão de nomenclatura segue a convenção de Ruby, onde a ideia é tornar o código autoexplicativo, indicando que a função é um predicado, ou seja, ela responde a uma pergunta.
+
+
+# Links úteis
+
+  Recursividade e Tail Call Optimization - https://efficient-sloth-d85.notion.site/Recursividade-e-Tail-Call-Optimization-79f2a8103b174d6db58d8bea19546c0d
+
+  - Resumo do artigo (Recursividade e Tail Call Optimization):
+    São conceitos importantes da programação funcional. O artigo explica o que é recursão, como ela funciona, por que ela pode ser ineficiente e como otimizá-la usando a técnica da Tail Call Optimization. O artigo também mostra exemplos de código em JavaScript para ilustrar os conceitos.
+
+    Recursão é uma forma de resolver problemas que dependem de repetições, usando uma função que chama a si mesma até chegar em um ponto de parada1. Por exemplo, para somar os elementos de uma lista, podemos usar uma função recursiva que recebe a lista como parâmetro e retorna a soma do primeiro elemento com o resultado da chamada da função para o resto da lista.
+
+    Tail Call Optimization é uma otimização que o compilador faz quando percebe que a última operação de uma função é uma chamada recursiva. Nesse caso, ele não precisa armazenar na memória todas as chamadas da função, mas apenas reutilizar a mesma chamada mudando os parâmetros2. Para usar essa técnica, precisamos escrever a função recursiva de forma que a chamada recursiva seja o último retorno da função. Por exemplo, para somar os elementos de uma lista usando TCO, podemos usar uma função recursiva que recebe a lista e um acumulador como parâmetros e retorna o valor do acumulador somado ao último elemento da lista quando ela estiver vazia.
+
+
+
+# Anotações
+  
+  Em Elixir, ao usar apenas o `_`, você está basicamente dizendo "estou ignorando intencionalmente este valor e não tenho intenção de usá-lo em nenhum lugar". E o compilador entende isso e não permite que você use `_` para acessar o valor.
+
+  No entanto, se você nomear uma variável como `_ignored` ou qualquer outro nome com o prefixo `_`, isso tem duas implicações:
+
+  1. **Convenção**: Como você mencionou, o prefixo `_` é uma convenção que indica aos outros desenvolvedores que você está ciente da variável, mas escolheu não usar o valor. É uma maneira de sinalizar intenção.
+
+  2. **Compilador**: Embora a variável `_ignored` seja tratada como qualquer outra variável em termos de atribuição, o compilador de Elixir não emitirá avisos para variáveis não utilizadas que começam com `_`. No entanto, se você tentar usar o valor de `_ignored` em seu código, ele funcionará, pois, em termos de escopo e atribuição, `_ignored` é tratado como qualquer outra variável.
+
+  Então, a principal diferença é:
+
+  - Usar apenas `_`: Ignora completamente o valor e você não pode usar `_` posteriormente para acessar esse valor.
+    
+  - Usar `_nomeDaVariavel`: A variável é tratada como qualquer outra variável, você pode usá-la posteriormente, mas por convenção e pelo tratamento do compilador, você está sinalizando que provavelmente não tem intenção de usá-la (e o compilador não emitirá avisos se você não a usar).
+
+  Então, resumindo, você está correto. Se você tentar usar uma variável prefixada com `_`, como `_ignored`, o código será compilado e executado, mas a convenção e o tratamento do compilador sugerem que você não deveria estar usando-a (a menos que haja uma razão específica para fazê-lo).
+
+  Vamos detalhar cada caso:
+
+  1. No primeiro exemplo:
+
+   ```elixir
+   def call_enum_map_ignored(list) do
+     [_head | tail] = list
+     IO.inspect(_head, label: "head")
+     Enum.map(list, fn x -> x + 2 end)
+   end
+   ```
+
+  Aqui você usa `_head` para desestruturar o primeiro elemento da lista e, em seguida, inspeciona esse elemento. Mesmo que a variável tenha um prefixo `_`, ela é tratada como qualquer variável normal, então você pode usá-la no código. No entanto, o compilador não se queixará se você não a usar, graças ao prefixo `_`.
+
+  2. No segundo exemplo:
+
+    ```elixir
+    def call_enum_map_ignored(list) do
+      [_ | tail] = list
+      IO.inspect(_, label: "head")
+      Enum.map(list, fn x -> x + 2 end)
+    end
+    ```
+
+  Aqui você usa apenas `_` para desestruturar o primeiro elemento da lista. No Elixir, o `_` é uma variável especial que literalmente significa "ignorar este valor", e você não pode se referir a ele posteriormente no código. Então, quando você tenta inspecionar `_`, o compilador dará um erro.
+
+  Portanto, sua compreensão está correta! Em Elixir, enquanto `_` é estritamente para ignorar valores, `_algumaCoisa` é uma forma de dizer "estou ciente deste valor, mas estou escolhendo não usá-lo (ou pelo menos estou sinalizando que ele pode não ser importante para a lógica principal)".
+
+
+
+  Métodos map com o Mapas
+
+  Enum.map(%{x: 20, g: 30}, fn x -> x end) // Pego o elemento inteiro -> [x: 20, g: 30]
+
+  Enum.map(%{x: 20, g: 30}, fn {k, v} -> v end) // Pego a chave e o valor e retorno só o valor -> [20, 30]
+
+  Enum.map(%{x: 20, g: 30}, fn {k, v} -> k end) // Pego a chave e o valor e retorno só a chave -> [x, g]
+
+  Enum.map(%{x: 20, g: 30}, fn {k, v} -> {k, v} end) // Pego a chave e o valor e retorno a chave e o valor -> [x: 20, g: 30]
